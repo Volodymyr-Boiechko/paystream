@@ -1,5 +1,6 @@
 package com.paystream.fraud;
 
+import com.paystream.fraud.messaging.consumer.PaymentConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

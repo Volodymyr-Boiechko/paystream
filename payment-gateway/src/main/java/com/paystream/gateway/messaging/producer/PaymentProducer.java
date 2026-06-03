@@ -1,6 +1,6 @@
-package com.paystream.gateway;
+package com.paystream.gateway.messaging.producer;
 
-import com.paystream.gateway.config.AppProperties;
+import com.paystream.gateway.config.MessagingProperties;
 import com.paystream.gateway.dto.PaymentRequested;
 import com.paystream.gateway.util.AppUtil;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -17,7 +17,7 @@ public class PaymentProducer implements AutoCloseable {
     private final KafkaProducer<String, String> producer;
 
     public PaymentProducer() {
-        this.producer = new KafkaProducer<>(AppProperties.get());
+        this.producer = new KafkaProducer<>(MessagingProperties.get());
     }
 
     public void publish(PaymentRequested payment) {

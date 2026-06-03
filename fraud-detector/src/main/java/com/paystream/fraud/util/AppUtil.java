@@ -16,4 +16,13 @@ public class AppUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static String getJsonFromObject(Object object) {
+        try {
+            var objectMapper = AppConfig.getObjectMapper();
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

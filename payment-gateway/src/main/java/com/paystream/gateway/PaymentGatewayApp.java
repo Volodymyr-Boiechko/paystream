@@ -1,5 +1,7 @@
 package com.paystream.gateway;
 
+import com.paystream.gateway.messaging.producer.PaymentProducer;
+import com.paystream.gateway.service.PaymentGenerator;
 import java.time.Instant;
 import java.util.stream.IntStream;
 import org.slf4j.Logger;

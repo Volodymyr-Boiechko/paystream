@@ -1,4 +1,4 @@
-package com.paystream.gateway;
+package com.paystream.gateway.service;
 
 import com.paystream.gateway.dto.PaymentRequested;
 import java.math.BigDecimal;
