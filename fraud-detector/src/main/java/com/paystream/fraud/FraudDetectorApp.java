@@ -9,5 +9,8 @@ public class FraudDetectorApp {
 
     public static void main(String[] args) {
         log.info("fraud-detector started");
+        try (PaymentConsumer paymentConsumer = new PaymentConsumer()) {
+            paymentConsumer.consume();
+        }
     }
 }
