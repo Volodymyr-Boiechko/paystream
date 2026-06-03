@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class PaymentGatewayApp {
 
-    private static final int TOTAL_PAYMENTS = 1_000_000;
+    private static final int TOTAL_PAYMENTS = 10_000;
 
     private static final Logger log = LoggerFactory.getLogger(PaymentGatewayApp.class);
 
@@ -21,7 +21,7 @@ public class PaymentGatewayApp {
             IntStream.range(0, TOTAL_PAYMENTS)
                 .forEach(index -> {
                     publisher.publish(generator.generate(index));
-                    if (index % 10_000 == 0) {
+                    if (index % 100 == 0) {
                         log.info("queued {} payments", index);
                     }
                 });

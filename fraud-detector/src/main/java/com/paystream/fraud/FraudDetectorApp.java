@@ -10,8 +10,16 @@ public class FraudDetectorApp {
 
     public static void main(String[] args) {
         log.info("fraud-detector started");
-        try (PaymentConsumer paymentConsumer = new PaymentConsumer()) {
-            paymentConsumer.consume();
+
+        PaymentConsumer consumer = new PaymentConsumer();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("shutdown requested, stopping consumer...");
+            consumer.stop();
+        }));
+
+        try (consumer) {
+            consumer.consume();
         }
     }
 }

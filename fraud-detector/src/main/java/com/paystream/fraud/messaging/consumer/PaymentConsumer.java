@@ -21,6 +21,8 @@ public class PaymentConsumer implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentConsumer.class);
 
+    private volatile boolean running = true;
+
     private static final String CONSUMER_TOPIC = "payment.requested";
     private static final String AUTHORIZED_TOPIC = "payment.authorized";
     private static final String FLAGGED_TOPIC = "payment.flagged";
@@ -40,7 +42,7 @@ public class PaymentConsumer implements AutoCloseable {
 
         int count = 0;
 
-        while (true) {
+        while (running) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
             for (ConsumerRecord<String, String> record : records) {
@@ -71,6 +73,10 @@ public class PaymentConsumer implements AutoCloseable {
         } catch (KafkaException e) {
             log.error("commit error, will retry on next batch", e);
         }
+    }
+
+    public void stop() {
+        running = false;
     }
 
     @Override
