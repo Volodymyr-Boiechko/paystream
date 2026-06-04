@@ -1,5 +1,38 @@
 services:
 
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ledger
+      POSTGRES_USER: ledger
+      POSTGRES_PASSWORD: ledger
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledger -d ledger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  ledger-migrations:
+    image: liquibase/liquibase:4.31
+    container_name: ledger-migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./ledger/src/main/resources/db/changelog:/liquibase/changelog
+    command: >
+      --url=jdbc:postgresql://postgres:5432/ledger
+      --username=ledger
+      --password=ledger
+      --changeLogFile=changelog/db.changelog-master.xml
+      update
+
   kafka:
     image: apache/kafka:4.0.0
     container_name: kafka
@@ -50,3 +83,6 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+
+volumes:
+  postgres_data:
