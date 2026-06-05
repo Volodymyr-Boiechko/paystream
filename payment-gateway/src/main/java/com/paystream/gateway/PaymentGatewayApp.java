@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class PaymentGatewayApp {
 
-    private static final int TOTAL_PAYMENTS = 10_000;
+    private static final int TOTAL_PAYMENTS = 100_000;
 
     private static final Logger log = LoggerFactory.getLogger(PaymentGatewayApp.class);
 

@@ -52,7 +52,7 @@ public class PaymentAuthorizedConsumer implements AutoCloseable {
                 var isNew = transactionRepository.saveTransaction(fraudResult);
 
                 if (!isNew) {
-                    log.info("Transaction with id {} already exists in ledger", paymentId);
+                    log.warn("Transaction with id {} already exists in ledger", paymentId);
                     continue;
                 }
 

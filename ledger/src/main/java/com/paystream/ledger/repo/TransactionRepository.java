@@ -29,7 +29,7 @@ public class TransactionRepository {
                     ?, ?, ?, ?, ?, ?,
                     ?, ?, ?, ?
                 )
-                ON CONFLICT (payment_id) DO NOTHING 
+                ON CONFLICT (payment_id) DO NOTHING
             """;
 
         try (Connection connection = DatabaseConfig.getConnection();
