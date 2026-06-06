@@ -8,7 +8,7 @@ public class LedgerApp {
 
     private static final Logger log = LoggerFactory.getLogger(LedgerApp.class);
 
-    private static final int NUMBER_OF_CONSUMERS = 2;
+    private static final int NUMBER_OF_CONSUMERS = 3;
 
     public static void main(String[] args) {
         log.info("ledger started");
