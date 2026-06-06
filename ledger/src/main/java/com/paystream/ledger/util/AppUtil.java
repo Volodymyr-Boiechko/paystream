@@ -8,13 +8,9 @@ public class AppUtil {
     private AppUtil() {
     }
 
-    public static <T> T readFromJson(String json, Class<T> clazz) {
-        try {
-            var objectMapper = AppConfig.getObjectMapper();
-            return objectMapper.readValue(json, clazz);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    public static <T> T readFromJson(String json, Class<T> clazz) throws JsonProcessingException {
+        var objectMapper = AppConfig.getObjectMapper();
+        return objectMapper.readValue(json, clazz);
     }
 
     public static String getJsonFromObject(Object object) {

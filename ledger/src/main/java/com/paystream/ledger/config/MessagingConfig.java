@@ -11,35 +11,26 @@ public class MessagingConfig {
     private static final String BOOTSTRAP_SERVERS =
         System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092");
 
-    private static final Properties MESSAGING_CONSUMER_PROPERTIES = new Properties();
-    private static final Properties MESSAGING_PRODUCER_PROPERTIES = new Properties();
-
-    static {
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-            StringDeserializer.class.getName());
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-            StringDeserializer.class.getName());
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.GROUP_ID_CONFIG, "ledger");
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        MESSAGING_CONSUMER_PROPERTIES.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-    }
-
-    static {
-        MESSAGING_PRODUCER_PROPERTIES.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        MESSAGING_PRODUCER_PROPERTIES.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        MESSAGING_PRODUCER_PROPERTIES.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-            StringSerializer.class.getName());
-    }
-
     private MessagingConfig() {
     }
 
-    public static Properties getConsumerProperties() {
-        return MESSAGING_CONSUMER_PROPERTIES;
+    public static Properties getConsumerProperties(String groupId) {
+        Properties properties = new Properties();
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        return properties;
     }
 
     public static Properties getProducerProperties() {
-        return MESSAGING_PRODUCER_PROPERTIES;
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class.getName());
+        return properties;
     }
 }
