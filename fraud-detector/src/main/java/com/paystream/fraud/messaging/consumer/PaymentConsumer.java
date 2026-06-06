@@ -4,6 +4,7 @@ import com.paystream.fraud.config.AppConfig;
 import com.paystream.fraud.config.MessagingConfig;
 import com.paystream.fraud.dto.PaymentRequested;
 import com.paystream.fraud.dto.PaymentStatus;
+import com.paystream.fraud.messaging.producer.FraudDlqProducer;
 import com.paystream.fraud.messaging.producer.PaymentProducer;
 import com.paystream.fraud.service.FraudScorer;
 import com.paystream.fraud.util.AppUtil;
@@ -29,11 +30,13 @@ public class PaymentConsumer implements AutoCloseable {
 
     private final FraudScorer fraudScorer;
     private final KafkaConsumer<String, String> consumer;
-    private final PaymentProducer producer;
+    private final PaymentProducer paymentProducer;
+    private final FraudDlqProducer dlqProducer;
 
     public PaymentConsumer() {
         this.consumer = new KafkaConsumer<>(MessagingConfig.getConsumerProperties());
-        this.producer = new PaymentProducer();
+        this.paymentProducer = new PaymentProducer();
+        this.dlqProducer = new FraudDlqProducer();
         this.fraudScorer = AppConfig.fraudScorer();
     }
 
@@ -46,23 +49,29 @@ public class PaymentConsumer implements AutoCloseable {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
             for (ConsumerRecord<String, String> record : records) {
-                var payload = record.value();
-                var paymentRequested = AppUtil.readFromJson(payload, PaymentRequested.class);
-
-                var fraudScore = fraudScorer.score(paymentRequested);
-                var topic = fraudScore.status() == PaymentStatus.APPROVED ? AUTHORIZED_TOPIC : FLAGGED_TOPIC;
-
-                producer.produce(topic, fraudScore);
-
-                count++;
-                if (count % 1000 == 0) {
-                    log.info("Payment requested: {}", paymentRequested);
-                    log.info("processed {}, partition {} offset {}", count, record.partition(), record.offset());
+                try {
+                    process(record);
+                    if (count % 1000 == 0) {
+                        log.info("processed {}, partition {} offset {}", count, record.partition(), record.offset());
+                    }
+                } catch (Exception e) {
+                    dlqProducer.putInDeadLetterQueue(record, e);
                 }
+                count++;
             }
 
             commitProcessed();
         }
+    }
+
+    private void process(ConsumerRecord<String, String> record) {
+        var payload = record.value();
+        var paymentRequested = AppUtil.readFromJson(payload, PaymentRequested.class);
+
+        var fraudScore = fraudScorer.score(paymentRequested);
+        var topic = fraudScore.status() == PaymentStatus.APPROVED ? AUTHORIZED_TOPIC : FLAGGED_TOPIC;
+
+        paymentProducer.produce(topic, fraudScore);
     }
 
     private void commitProcessed() {
